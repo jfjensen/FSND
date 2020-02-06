@@ -31,7 +31,7 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-from models import Venue, Artist
+from models import Venue, Artist, Show
 
 
 #----------------------------------------------------------------------------#
