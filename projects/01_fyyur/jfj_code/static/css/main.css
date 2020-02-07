@@ -101,6 +101,10 @@ ul.items {
   padding: 0;
   margin: 0;
 }
+
+ul.items > li {
+ display: flex;
+}
 ul.items > li > a {
   margin-bottom: 15px;
   display: flex;
@@ -110,13 +114,28 @@ ul.items > li > a {
 ul.items > li > a > i {
   padding: 7px 10px 0;
 }
-ul.items > li:hover {
+ul.items > li > a:hover {
   color: orange;
   cursor: pointer;
 }
-ul.items > li:hover h5 {
+ul.items > li > a:hover h5 {
   color: orange;
 }
+
+ul.items > li > button {
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+  color: red;
+  float: right;
+  cursor: pointer;
+  font-size: 18px;
+  background-color: white;
+  padding: 0px 0px 0px 0px;
+  height: 0px;
+}
+
+
 .item {
   padding: 5px 5px 5px;
   flex: 1;

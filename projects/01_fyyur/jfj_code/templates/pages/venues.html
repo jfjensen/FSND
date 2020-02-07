@@ -12,8 +12,39 @@
 					<h5>{{ venue.name }}</h5>
 				</div>
 			</a>
+			<button class="delete-button" data-id="{{ venue.id }}">&cross;</button>
 		</li>
 		{% endfor %}
 	</ul>
 {% endfor %}
+
+<script type="text/javascript">
+
+	let handleDelete = function(e) {
+		console.log('Delete event',e);
+		const venueId = e.target.dataset['id'];
+		fetch('/venues/' + venueId, {
+			method: 'DELETE'
+		})
+		.then(function(response) {
+            return response.json();
+		}).then(function(jsonResponse) {
+			console.log('Delete successful: ' + jsonResponse['success']);
+			window.location.href = '/';
+		})
+		.catch(function() {
+			console.log('Delete Venue Error')
+		});
+
+	}
+
+
+	const deletebuttons = document.querySelectorAll('.delete-button');
+	for(let i = 0; i < deletebuttons.length; i++) {
+	const deletebutton = deletebuttons[i] ;
+		deletebutton.onclick = handleDelete;
+	}
+
+
+</script>
 {% endblock %}
