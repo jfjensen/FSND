@@ -171,7 +171,7 @@ def show_venue(venue_id):
   data={
       "id": venue_id,
       "name": venue.name,
-      "genres": [venue.genres], ###################################
+      "genres": venue.genres.split(", "), #[venue.genres], ###################################
       "address": venue.address,
       "city": venue.city,
       "state": venue.state,
