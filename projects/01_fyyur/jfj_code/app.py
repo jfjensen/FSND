@@ -341,13 +341,13 @@ def edit_artist(artist_id):
   }
 
   # Done: populate form with fields from artist with ID <artist_id>
-  # form = ArtistForm(obj=artist_query)
   form = ArtistForm(data=artist)
+
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-  # TODO: take values from the form submitted, and update existing
+  # Done: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
 
   artist = Artist.query.filter_by(id=artist_id).first_or_404()
