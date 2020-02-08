@@ -40,12 +40,13 @@ from models import Venue, Artist, Show
 
 def format_datetime(value, format='medium'):
   date = dateutil.parser.parse(value)
-  # print('value: {} date: {} type: {} date__: {}'.format(value,date, type(date), date.date()))
+  
   if format == 'full':
       format="EEEE MMMM, d, y 'at' h:mma"
   elif format == 'medium':
       format="EE MM, dd, y h:mma"
-  return str(date)#babel.dates.format_datetime(date, format) ############################ !!!
+  # I was having some issues with Babel so I changed the following line to this:
+  return str(date)
 
 app.jinja_env.filters['datetime'] = format_datetime
 
@@ -383,28 +384,64 @@ def edit_artist_submission(artist_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
-  form = VenueForm()
+
+  venue_query = Venue.query.filter_by(id=venue_id).first_or_404()
+
   venue={
-    "id": 1,
-    "name": "The Musical Hop",
-    "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-    "address": "1015 Folsom Street",
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "123-123-1234",
-    "website": "https://www.themusicalhop.com",
-    "facebook_link": "https://www.facebook.com/TheMusicalHop",
-    "seeking_talent": True,
-    "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
-    "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
+    "id": venue_query.id,
+    "name": venue_query.name,
+    "genres": venue_query.genres.split(", "),
+    "address": venue_query.address,
+    "city": venue_query.city,
+    "state": venue_query.state,
+    "phone": venue_query.phone,
+    "website": venue_query.website,
+    "facebook_link": venue_query.facebook_link,
+    "seeking_talent": venue_query.seeking_talent,
+    "seeking_description": venue_query.seeking_description,
+    "image_link": venue_query.image_link
   }
-  # TODO: populate form with values from venue with ID <venue_id>
+
+  # Done: populate form with fields from artist with ID <venue_id>
+  form = VenueForm(data=venue)
+  
   return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
-  # TODO: take values from the form submitted, and update existing
+  # Done: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
+
+  venue = Venue.query.filter_by(id=venue_id).first_or_404()
+  error = False
+
+  try:
+    form = VenueForm(obj=venue)
+    if form.validate():
+      genres = request.form.getlist('genres')
+      form.populate_obj(venue)
+      venue.genres = ', '.join(genres)
+      db.session.add(venue)
+      db.session.commit()
+    else:
+      print(form.errors)
+      error = True
+
+  except:
+    error = True
+    db.session.rollback()
+    print(sys.exc_info())
+
+  finally:
+    db.session.close()
+
+  if error:
+    # Done: on unsuccessful db insert, flash an error instead.
+    flash('An error occurred. Venue ' + request.form['name'] + ' could not be updated.')
+  else:
+    # on successful db insert, flash success
+    flash('Venue ' + request.form['name'] + ' was successfully updated!')
+
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
